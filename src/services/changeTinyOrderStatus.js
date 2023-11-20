@@ -1,0 +1,20 @@
+const TOKEN = process.env.TINY_TOKEN;
+
+function changeTinyOrderStatus(idPedido, situacao) {
+    var myHeaders = new Headers();
+    myHeaders.append("Accept", "application/json");
+    myHeaders.append("Content-Type", "application/json");
+
+    situacao = 'aprovado';
+
+    var requestOptions = {
+        method: 'POST',
+        headers: myHeaders
+    };
+
+    return fetch(`https://api.tiny.com.br/api2/pedido.alterar.situacao?token=${TOKEN}&id=${idPedido}&situacao=${situacao}&formato=JSON`, requestOptions)
+        .then(response => response.text())
+        .catch(error => console.log('error', error));
+}
+
+export default changeTinyOrderStatus;

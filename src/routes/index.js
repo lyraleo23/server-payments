@@ -1,10 +1,11 @@
 import express from "express";
-import cielo from "./cieloRoutes.js";
+import pagarme from "./pagarmeRoutes.js";
+import tuna from "./tunaRoutes.js";
 import cors from "cors";
 
 const routes = (app) => {
   app.route('/').get((req, res) => {
-    res.status(200).send({titulo: "API Miligrama"})
+    res.status(200).send({titulo: "API Payments"})
   })
 
   app.use( 
@@ -13,7 +14,8 @@ const routes = (app) => {
     }),
     express.json(),
     express.urlencoded(),
-    cielo
+    pagarme,
+    tuna
   )
 }
 
