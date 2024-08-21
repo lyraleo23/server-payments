@@ -28,7 +28,7 @@ class PagarMeController {
                 console.log(`Pedido ${id} atualizado para aprovado pela API V3!`);
             }
             catch(e) {
-                console.error(`Erro ao  usar API_V3: ${e.message}`)
+                console.error(`Erro ao usar API_V3: ${e.message}`)
                 await changeTinyOrderStatus(items[0].id, 'aprovado');
                 console.log(`Pedido ${id} atualizado para aprovado!`);
             }
@@ -40,6 +40,36 @@ class PagarMeController {
     static async postbackTransactions(req, res) {
         console.log('Recebendo o postbackTransactions da Pagar.me');
         let request = req.body
+        res.status(200).send('OK');
+    }
+
+    static async pedidosV5(req, res) {
+        console.log('Recebendo checkoutV5 da Pagar.me');
+        let request = req.body;
+        // console.log(request);
+
+        let status = request.data.status;
+        let items = request.data.items[0];
+        console.log(items);
+        let description = items.description;
+        let id = items.code;
+
+        if (status === 'paid') {
+            try {
+                let token_response = await obterTokenTiny();
+                token_response = JSON.parse(token_response);
+                let access_token = token_response[token_response.length - 1].access_token;
+                let response_atualizacao_v3 = await atualizarSituacaoPedidoV3(access_token, id, 3);
+                console.log(response_atualizacao_v3);
+                console.log(`${description} atualizado para aprovado pela API V3!`);
+            }
+            catch(e) {
+                console.error(`Erro ao usar API_V3: ${e.message}`);
+                await changeTinyOrderStatus(id, 'aprovado');
+                console.log(`${description} atualizado para aprovado!`);
+            }
+        }
+
         res.status(200).send('OK');
     }
 
