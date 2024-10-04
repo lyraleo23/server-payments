@@ -16,8 +16,7 @@ class TunaController {
         let partnerUniqueId = request.partnerUniqueId;
         let paymentKey = request.paymentKey;
 
-        if (statusId === '2' &&
-        partnerUniqueId.length > 8 && partnerUniqueId.length < 11) {
+        if (statusId === '2' && partnerUniqueId.length > 8 && partnerUniqueId.length < 11) {
             let pedidoMiliApp = await obterPedidoMiliApp(partnerUniqueId);
             pedidoMiliApp = JSON.parse(pedidoMiliApp);
 
@@ -33,9 +32,44 @@ class TunaController {
                 // console.log(`Pedido ${partnerUniqueId} atualizado para aprovado`);
 
                 try {
+                    let description = request.items[0].productDescription;
+                    description = description.split("_");
+    
+                    if (description === 'miligrama') {
+                        var origin = 'miligrama';
+                    }
+                    else if (description === 'fortaleza') {
+                        var origin = 'miligrama_nordeste';
+                    }
+                    else {
+                        var origin = 'miligrama';
+                    }
+                }
+                catch(e) {
+                    console.error(`Erro ao obter origem: ${e.message}`);
+                    var origin = 'miligrama';
+                }
+                console.log(`origin: ${origin}`);
+
+                try {
                     let token_response = await obterTokenTiny();
                     token_response = JSON.parse(token_response);
-                    let access_token = token_response[token_response.length - 1].access_token;
+    
+                    for (let k = token_response.length - 1; k >= 0; k--) {
+                        let token_origin = token_response[k].origin;
+                        if (token_origin === origin) {
+                            var access_token = token_response[k].access_token;
+                        }
+                    }
+                }
+                catch(e) {
+                    console.error(`Erro ao obter chave de acesso: ${e}`);
+                }
+
+                try {
+                    // let token_response = await obterTokenTiny();
+                    // token_response = JSON.parse(token_response);
+                    // let access_token = token_response[token_response.length - 1].access_token;
                     let response_atualizacao_v3 = await atualizarSituacaoPedidoV3(access_token, partnerUniqueId, 3);
                     console.log(response_atualizacao_v3);
                     console.log(`Pedido ${partnerUniqueId} atualizado para aprovado pela API V3!`);
@@ -50,7 +84,7 @@ class TunaController {
         }
         if (statusId === '5' &&
         partnerUniqueId.length > 8 && partnerUniqueId.length < 11) {
-            console.log(`Enviando notificação de pedido cancelado!`);
+            // console.log(`Enviando notificação de pedido cancelado!`);
             // await changeTinyOrderStatus(partnerUniqueId, 'cancelado');
         }
 
