@@ -7,7 +7,7 @@ class PagarMeController {
     static async postbackOrders(req, res) {
         console.log('Recebendo o postbackOrders da Pagar.me');
         let request = req.body;
-        console.log(request);
+        // console.log(request);
         let id = request.id;
         let event = request.event;
         let current_status = request.current_status;
@@ -48,9 +48,7 @@ class PagarMeController {
                         var access_token = token_response[k].access_token;
                     }
                 }
-                // let token_response = await obterTokenTiny();
-                // token_response = JSON.parse(token_response);
-                // let access_token = token_response[token_response.length - 1].access_token;
+
                 let response_atualizacao_v3 = await atualizarSituacaoPedidoV3(access_token, id_tiny, 3);
                 console.log(response_atualizacao_v3);
                 console.log(`Pedido ${id_tiny} atualizado para aprovado pela API V3!`);
@@ -75,7 +73,7 @@ class PagarMeController {
         // console.log(request);
         let status = request.data.status;
         let items = request.data.items[0];
-        console.log(items);
+        // console.log(items);
         let description = items.description;
         let id_tiny = items.code;
 
@@ -133,7 +131,6 @@ class PagarMeController {
                 console.error(`Erro ao usar API_V3: ${e.message}`);
             }
         }
-
         res.status(200).send('OK');
     }
 
